@@ -1,5 +1,68 @@
-﻿<h3>index</h3>
+﻿<@page "/Tecnicos"
+@rendermode InteractiveServer
+@inject TecnicoService tecnicoService
+@inject NavigationManager navigation
+
+<PageTitle>Técnicos</PageTitle>
+<div class="container">
+    <div class="card shadow-lg">
+        @*Header*@
+        <div class="card-header text-center bg-primary">
+            <h3 class="text-light fw-bold"><strong>T&eacute;cnicos</strong></h3>
+        </div>
+        <div class="text-end mt-2 mb-2">
+            <a href="/CreateTecnicos" class="btn btn-outline-success bi bi-plus"> Crear</a>
+        </div>
+        @*Body*@
+        <div class="card body">
+            <table class="table table-light table-hover table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>tipoId</th>
+                        <th>tipos de tecnico</th>
+                        <th>detalle</th>
+                        
+                        <th>Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var tecnico in tecnicos)
+                    {
+                        <tr>
+                            <td>@tecnico.TecnicosId</td>
+                            <td>@tecnico.Nombres</td>
+                            <td>@tecnico.SueldoHora.ToString("N2")</td>
+                            <td class="text-center">
+                                <a href="/DeleteTec/@tecnico.TecnicosId" class="btn btn-danger bi bi-trash-fill fw-bold"> Eliminar</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        @*Footer*@
+        <div class="cardcard-footer">
+            <p><strong>Total de técnicos:</strong> @tecnicos.Count</p>
+        </div>
+    </div>
+</div>
 
 @code {
+    public List<Tecnicos> tecnicos = new List<Tecnicos>();
 
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(500);
+        tecnicos = await tecnicoService.Listar(t => t.TecnicosId > 0);
+    }
+
+    public void IrACrear()
+    {
+        navigation.NavigateTo("/CreateTecnicos");
+    }
+
+    public void IrAEliminar(int id)
+    {
+        navigation.NavigateTo($"/DeleteTecnicos/{id}");
+    }
 }
