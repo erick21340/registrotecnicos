@@ -1,0 +1,50 @@
+﻿@page "/CreateTecnicos"
+
+@using registrotecnicos.Models
+@inject TecnicoServices tecnicoService
+@inject NavigationManager navigation
+
+<PageTitle>Guardar nuevo técnico</PageTitle>
+<EditForm Model="tecnico" OnValidSubmit="Crear">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header">
+                <h1><strong>Crear nuevo técnico</strong></h1>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label" for="TecnicosTipos"><strong>TecnicosTipos</strong></label>
+                    <InputText id="TecnicosTipos" class="form-control" @bind-Value="tecnico.TecnicosTipos" />
+                    <ValidationMessage For="@(() => tecnico.TecnicosTipos)" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="TipoId"><strong>TipoId</strong></label>
+                    <InputNumber id="TipoId" class="form-control" @bind-Value="tecnico.tipoid" />
+                    <ValidationMessage For="@(() => tecnico.tipoid)" />
+                </div>
+            </div>
+            <div class="card-footer">
+                <button type="button" class="btn btn-outline-secondary" @onclick="Volver">Volver</button>
+                <button type="submit" class="btn btn-outline-success">Crear</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    public Tecnicos tecnico { get; set; } = new Tecnicos();
+
+    public async Task Crear()
+    {
+        await tecnicoService.Crear(tecnico);
+        tecnico = new Tecnicos();
+        navigation.NavigateTo("/Tecnicos");
+    }
+
+    public void Volver()
+    {
+        navigation.NavigateTo("/Tecnicos");
+    }
+}
