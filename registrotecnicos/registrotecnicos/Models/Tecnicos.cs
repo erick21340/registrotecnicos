@@ -6,9 +6,10 @@ namespace registrotecnicos.Models
     {
         [Key]
 
-        public int TiposId { get; set; }
+        public int TecnicoId { get; set; }
 
         public string? TecnicosTipos { get; set; }
 
+        public int tipoid { get; set; }
     }
 }
