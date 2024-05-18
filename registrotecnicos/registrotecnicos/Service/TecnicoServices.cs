@@ -59,5 +59,16 @@ namespace registrotecnicos.Service
                 .Where(criterio)
                 .ToList();
         }
+        public async Task<bool> Guardar(Tecnicos tecnicos)
+        {
+            if (!await Existe(tecnicos.TecnicoId))
+            {
+                return await Insertar(tecnicos);
+            }
+            else
+            {
+                return await Modificar(tecnicos);
+            }
+        }
     }
 }
