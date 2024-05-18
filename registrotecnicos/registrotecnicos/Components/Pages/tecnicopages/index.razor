@@ -19,11 +19,13 @@
 
         <div class="row mb-4">
             <div class="col">
-                <input class="form-control" @bind="filtroTipo" placeholder="Filtrar por tipo de técnico" />
-                <button class="btn btn-primary mt-2" @onclick="FiltrarTecnicos">Filtrar</button>
-                <button class="btn btn-secondary mt-2 ml-2" @onclick="ResetearFiltro">Resetear</button>
+                <input class="form-control" @bind="filtroTipoId" type="number" placeholder="Filtrar por TipoId" />
+            </div>
+            <div class="col">
+                <input class="form-control" @bind="filtroTiposTecnico" placeholder="Filtrar por Tipos Técnico" />
             </div>
         </div>
+        <a href="/FiltrarTecnico" class="btn btn-success"><i class="fas fa-plus"></i> Buscar</a>
 
         <table class="table table-bordered text-center">
             <thead class="bg-primary text-white">
@@ -36,20 +38,29 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var tecnico in tecnicosList)
+                @if (tecnicosList != null && tecnicosList.Any())
+                {
+                    @foreach (var tecnico in tecnicosList)
+                    {
+                        <tr>
+                            <td>@tecnico.tipoid</td>
+                            <td>@tecnico.TecnicosTipos</td>
+                            <td>
+                                <a href="/DetalleTecnico/@tecnico.TecnicoId" class="btn btn-sm btn-info"><i class="fas fa-info-circle"></i> Detalle</a>
+                            </td>
+                            <td>
+                                <a href="/EditTecnico/@tecnico.TecnicoId" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i> Editar</a>
+                            </td>
+                            <td>
+                                <a href="/DeleteTecnico/@tecnico.TecnicoId" class="btn btn-sm btn-outline-danger"><i class="fas fa-edit"></i> Eliminar</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td>@tecnico.tipoid</td>
-                        <td>@tecnico.TecnicosTipos</td>
-                        <td>
-                            <a href="/DetalleTecnico/@tecnico.TecnicoId" class="btn btn-sm btn-info"><i class="fas fa-info-circle"></i> Detalle</a>
-                        </td>
-                        <td>
-                            <a href="/EditTecnico/@tecnico.TecnicoId" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i> Editar</a>
-                        </td>
-                        <td>
-                            <a href="/DeleteTecnico/@tecnico.TecnicoId" class="btn btn-sm alert-danger "><i class="fas fa-trash"></i> Eliminar</a>
-                        </td>
+                        <td colspan="5">No se encontraron técnicos.</td>
                     </tr>
                 }
             </tbody>
@@ -59,7 +70,8 @@
 
 @code {
     public List<Tecnicos> tecnicosList = new List<Tecnicos>();
-    public string filtroTipo { get; set; } = string.Empty;
+    public int filtroTipoId { get; set; }
+    public string filtroTiposTecnico { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -90,19 +102,21 @@
 
     private async Task FiltrarTecnicos()
     {
-        if (string.IsNullOrWhiteSpace(filtroTipo))
+        if (filtroTipoId != 0 && !string.IsNullOrWhiteSpace(filtroTiposTecnico))
         {
-            tecnicosList = await TecnicosServices.Listar(t => true);
+            tecnicosList = await TecnicosServices.Listar(t => t.tipoid == filtroTipoId && t.TecnicosTipos.Contains(filtroTiposTecnico));
+        }
+        else if (filtroTipoId != 0)
+        {
+            tecnicosList = await TecnicosServices.Listar(t => t.tipoid == filtroTipoId);
+        }
+        else if (!string.IsNullOrWhiteSpace(filtroTiposTecnico))
+        {
+            tecnicosList = await TecnicosServices.Listar(t => t.TecnicosTipos.Contains(filtroTiposTecnico));
         }
         else
         {
-            tecnicosList = await TecnicosServices.Listar(t => t.TecnicosTipos.Contains(filtroTipo));
+            tecnicosList = await TecnicosServices.Listar(t => true);
         }
-    }
-
-    private async Task ResetearFiltro()
-    {
-        filtroTipo = string.Empty;
-        await CargarTecnicos();
     }
 }
