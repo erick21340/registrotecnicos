@@ -70,5 +70,6 @@ namespace registrotecnicos.Service
                 return await Modificar(tecnicos);
             }
         }
+
     }
 }
