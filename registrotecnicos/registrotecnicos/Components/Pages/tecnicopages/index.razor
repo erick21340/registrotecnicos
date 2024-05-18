@@ -1,68 +1,89 @@
-﻿@page "/Tecnicos"
-@rendermode InteractiveServer
-@inject TecnicoService tecnicoService
-@inject NavigationManager navigation
+﻿@page "/Tecnico"
+@inject TecnicoServices TecnicosServices
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
-<PageTitle>Tipos Técnicos</PageTitle>
-<div class="container">
-    <div class="card shadow-lg">
-        @*Header*@
-        <div class="card-header text-center bg-primary">
-            <h3 class="text-light fw-bold"><strong>T&eacute;cnicos</strong></h3>
+
+<PageTitle>Lista de Técnicos</PageTitle>
+
+<div class="card">
+    <div class="card-header bg-primary">
+        <div class="row text-white text-center">
+            <h3>Técnicos</h3>
         </div>
-        <div class="text-end mt-2 mb-2">
-            <a href="/CreateTecnicos" class="btn btn-outline-success bi bi-plus"> Crear</a>
+    </div>
+
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col d-flex justify-content-end align-items-end">
+                <a href="/CreateTecnicos" class="btn btn-success"><i class="fas fa-plus"></i> Crear</a>
+            </div>
         </div>
-        @*Body*@
-        <div class="card body">
-            <table class="table table-light table-hover table-striped table-bordered">
-                <thead>
+
+        <table class="table table-bordered text-center">
+            <thead class="bg-primary text-white">
+                <tr>
+                    <th>TecnicoId</th>
+                    <th>Tipos Tecnicos</th>
+                    <th>detalle</th>
+                    <th>Editar</th>
+                    <th>Eliminar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var tecnico in tecnicosList)
+                {
                     <tr>
-                        <th>TiposTécnicos</th>
-                        <th>TiposId</th>
-                        <th>Detalle</th>
-                        <th> Modificar</th>
-                        <th>Eliminar</th>
+                        <td>@tecnico.tipoid</td>
+                        <td>@tecnico.TecnicosTipos</td>
+                        
+                        <td>
+                            <a href="/EditTecnico/@tecnico." class="btn btn-sm btn-primary"><i class="fas fa-edit"></i> Editar</a>
+                        </td>
+                        <td>
+                            <a href="/DeleteTecnico/@tecnico." class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Eliminar</a>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach (var tecnico in tecnicos)
-                    {
-                        <tr>
-                            <td>@tecnico.TiposTecnicosId</td>
-                            <td>@tecnico.TiposId</td>
-                            <
-                            <td class="text-center">
-                                <a href="/DeleteTec/@tecnico.TiposTecnicosId" class="btn btn-danger bi bi-trash-fill fw-bold"> Eliminar</a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-        @*Footer*@
-        <div class="cardcard-footer">
-            <p><strong>Total de técnicos:</strong> @tecnicos.Count</p>
-        </div>
+                }
+            </tbody>
+        </table>
     </div>
 </div>
 
 @code {
-    public List<Tecnicos> tecnicos = new List<Tecnicos>();
+    public List<Tecnicos> tecnicosList = new List<Tecnicos>();
+    public Tecnicos nuevoTecnico = new Tecnicos();
 
     protected override async Task OnInitializedAsync()
     {
-        await Task.Delay(500);
-        tecnicos = await tecnicoService.Listar(t => t.TecnicosId > 0);
+        await CargarTecnicos();
     }
 
-    public void IrACrear()
+    private async Task CargarTecnicos()
     {
-        navigation.NavigateTo("/CreateTecnicos");
+        tecnicosList = await TecnicosServices.Listar(t => true);
     }
 
-    public void IrAEliminar(int id)
+    private async Task EliminarTecnico(Tecnicos tecnico)
     {
-        navigation.NavigateTo($"/DeleteTecnicos/{id}");
+        var confirmar = await JSRuntime.InvokeAsync<bool>("confirm", $"¿Estás seguro de eliminar el técnico {tecnico.TecnicosTipos}?");
+       
+    }
+    @code {
+        bool mostrarFormulario = false;
     }
 
+        private async Task GuardarNuevoTecnico()
+        {
+    var guardado = await TecnicosServices.Guardar(nuevoTecnico);
+    if (guardado)
+    {
+        mostrarFormulario = false;
+        await CargarTecnicos();
+    }
+    else
+    {
+        // Manejar error
+    }
+        }
+}
