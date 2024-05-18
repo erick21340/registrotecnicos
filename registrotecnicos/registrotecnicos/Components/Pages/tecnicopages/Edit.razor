@@ -1,0 +1,68 @@
+﻿@page "/EditTecnico/{TecnicoId:int}"
+@rendermode InteractiveServer
+@inject TecnicoServices tecnicosServices
+@inject NavigationManager navigation
+
+<PageTitle>@(tecnico != null ? "Editar técnico" : "Crear nuevo técnico")</PageTitle>
+
+<EditForm Model="@tecnico" OnValidSubmit="@Guardar">
+    <DataAnnotationsValidator />
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header">
+                <h1><strong>@(tecnico != null ? "Editar técnico" : "Crear nuevo técnico")</strong></h1>
+            </div>
+            <div class="card-body">
+                <label class="form-label" for="tipoid"><strong>TipoId</strong></label>
+                <InputNumber id="tipoid" class="form-control" @bind-Value="tecnico.tipoid"></InputNumber>
+                <ValidationMessage For="@(() => tecnico.tipoid)" />
+
+                <label class="form-label" for="TecnicosTipos"><strong>Tipos Tecnicos</strong></label>
+                <InputText id="TecnicosTipos" class="form-control" @bind-Value="tecnico.TecnicosTipos"></InputText>
+                <ValidationMessage For="@(() => tecnico.TecnicosTipos)" />
+            </div>
+            <div class="card-footer">
+                <button type="button" class="btn btn-outline-secondary" @onclick="Volver">Volver</button>
+                <button type="submit" class="btn btn-outline-success bi bi-floppy"> @(tecnico != null ? "Guardar cambios" : "Crear")</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int TecnicoId { get; set; }
+
+    public Tecnicos tecnico { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (TecnicoId > 0)
+        {
+            tecnico = await tecnicosServices.Buscar(TecnicoId);
+        }
+        else
+        {
+            tecnico = new Tecnicos();
+        }
+    }
+
+    public async Task Guardar()
+    {
+        var guardado = await tecnicosServices.Guardar(tecnico);
+        if (guardado)
+        {
+            navigation.NavigateTo("/Tecnico");
+        }
+        else
+        {
+            Volver();
+            //Mensaje error
+        }
+    }
+
+    public void Volver()
+    {
+        navigation.NavigateTo("/Tecnico");
+    }
+}
