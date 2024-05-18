@@ -48,7 +48,7 @@
                             <a href="/EditTecnico/@tecnico.TecnicoId" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i> Editar</a>
                         </td>
                         <td>
-                            <button class="btn btn-sm btn-danger" @onclick="() => EliminarTecnico(tecnico)"><i class="fas fa-trash"></i> Eliminar</button>
+                            <a href="/DeleteTecnico/@tecnico.TecnicoId" class="btn btn-sm alert-danger "><i class="fas fa-trash"></i> Eliminar</a>
                         </td>
                     </tr>
                 }
@@ -71,11 +71,21 @@
         tecnicosList = await TecnicosServices.Listar(t => true);
     }
 
-    private async Task EliminarTecnico(Tecnicos tecnico)
+    private async Task EliminarTecnico(int tecnicoId)
     {
-        var confirmar = await JSRuntime.InvokeAsync<bool>("confirm", $"¿Estás seguro de eliminar el técnico {tecnico.TecnicosTipos}?");
-       
-            
+        var confirmar = await JSRuntime.InvokeAsync<bool>("confirm", $"¿Estás seguro de eliminar el técnico con ID {tecnicoId}?");
+        if (confirmar)
+        {
+            var eliminado = await TecnicosServices.Eliminar(tecnicoId);
+            if (eliminado)
+            {
+                await CargarTecnicos();
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "No se pudo eliminar el técnico.");
+            }
+        }
     }
 
     private async Task FiltrarTecnicos()
