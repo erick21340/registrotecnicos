@@ -1,0 +1,72 @@
+﻿@page "/FiltrarTecnico"
+@page "/FiltrarTecnico/{filtroTipo}"
+
+@inject TecnicoServices TecnicosServices
+@inject NavigationManager Navigation
+
+<PageTitle>Filtrar Técnicos</PageTitle>
+
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h3><strong>Filtrar Tipos Técnicos</strong></h3>
+        </div>
+
+        
+            <h4>Lista de Técnicos Filtrados</h4>
+
+            <table class="table table-bordered text-center">
+                <thead class="bg-primary text-white">
+                    <tr>
+                        <th>TipoId</th>
+                        <th>Tipos Técnico</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var tecnico in tecnicosFiltrados)
+                    {
+                        <tr>
+                            <td>@tecnico.tipoid</td>
+                            <td>@tecnico.TecnicosTipos</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer">
+            <a href="/Tecnico" class="btn btn-outline-dark">Volver</a>
+        </div>
+    </div>
+
+@code {
+    [Parameter]
+    public string? filtroTipo { get; set; }
+    public List<Tecnicos> tecnicosFiltrados { get; set; } = new List<Tecnicos>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await FiltrarTecnicos();
+    }
+
+    private string FiltrarUrl => string.IsNullOrWhiteSpace(filtroTipo) ? "/FiltrarTecnico" : $"/FiltrarTecnico/{filtroTipo}";
+
+    private async Task FiltrarTecnicos()
+    {
+        if (!string.IsNullOrWhiteSpace(filtroTipo))
+        {
+            if (int.TryParse(filtroTipo, out int tipoId))
+            {
+                tecnicosFiltrados = await TecnicosServices.Listar(t => t.tipoid == tipoId);
+            }
+            else
+            {
+                tecnicosFiltrados = await TecnicosServices.Listar(t => t.TecnicosTipos.Contains(filtroTipo));
+            }
+        }
+        else
+        {
+            tecnicosFiltrados = await TecnicosServices.Listar(t => true);
+        }
+    }
+}
