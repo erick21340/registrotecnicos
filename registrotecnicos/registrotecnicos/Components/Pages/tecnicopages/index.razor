@@ -3,14 +3,11 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 
-
 <PageTitle>Lista de Técnicos</PageTitle>
 
 <div class="card">
-    <div class="card-header bg-primary">
-        <div class="row text-white text-center">
-            <h3>Técnicos</h3>
-        </div>
+    <div class="card-header bg-primary text-white text-center">
+        <h3>Técnicos</h3>
     </div>
 
     <div class="card-body">
@@ -20,12 +17,20 @@
             </div>
         </div>
 
+        <div class="row mb-4">
+            <div class="col">
+                <input class="form-control" @bind="filtroTipo" placeholder="Filtrar por tipo de técnico" />
+                <button class="btn btn-primary mt-2" @onclick="FiltrarTecnicos">Filtrar</button>
+                <button class="btn btn-secondary mt-2 ml-2" @onclick="ResetearFiltro">Resetear</button>
+            </div>
+        </div>
+
         <table class="table table-bordered text-center">
             <thead class="bg-primary text-white">
                 <tr>
-                    <th>TecnicoId</th>
-                    <th>Tipos Tecnicos</th>
-                    <th>detalle</th>
+                    <th>TipoId</th>
+                    <th>Tipos Técnico</th>
+                    <th>Detalle</th>
                     <th>Editar</th>
                     <th>Eliminar</th>
                 </tr>
@@ -36,12 +41,14 @@
                     <tr>
                         <td>@tecnico.tipoid</td>
                         <td>@tecnico.TecnicosTipos</td>
-                        
                         <td>
-                            <a href="/EditTecnico/@tecnico." class="btn btn-sm btn-primary"><i class="fas fa-edit"></i> Editar</a>
+                            <a href="/DetalleTecnico/@tecnico.TecnicoId" class="btn btn-sm btn-info"><i class="fas fa-info-circle"></i> Detalle</a>
                         </td>
                         <td>
-                            <a href="/DeleteTecnico/@tecnico." class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Eliminar</a>
+                            <a href="/EditTecnico/@tecnico.TecnicoId" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i> Editar</a>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" @onclick="() => EliminarTecnico(tecnico)"><i class="fas fa-trash"></i> Eliminar</button>
                         </td>
                     </tr>
                 }
@@ -52,7 +59,7 @@
 
 @code {
     public List<Tecnicos> tecnicosList = new List<Tecnicos>();
-    public Tecnicos nuevoTecnico = new Tecnicos();
+    public string filtroTipo { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -68,22 +75,24 @@
     {
         var confirmar = await JSRuntime.InvokeAsync<bool>("confirm", $"¿Estás seguro de eliminar el técnico {tecnico.TecnicosTipos}?");
        
-    }
-    @code {
-        bool mostrarFormulario = false;
+            
     }
 
-        private async Task GuardarNuevoTecnico()
-        {
-    var guardado = await TecnicosServices.Guardar(nuevoTecnico);
-    if (guardado)
+    private async Task FiltrarTecnicos()
     {
-        mostrarFormulario = false;
+        if (string.IsNullOrWhiteSpace(filtroTipo))
+        {
+            tecnicosList = await TecnicosServices.Listar(t => true);
+        }
+        else
+        {
+            tecnicosList = await TecnicosServices.Listar(t => t.TecnicosTipos.Contains(filtroTipo));
+        }
+    }
+
+    private async Task ResetearFiltro()
+    {
+        filtroTipo = string.Empty;
         await CargarTecnicos();
     }
-    else
-    {
-        // Manejar error
-    }
-        }
 }
