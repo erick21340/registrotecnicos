@@ -74,6 +74,13 @@ namespace registrotecnicos.Service
             return await _contexto.incentivosTecnicos.FindAsync(incentivoId);
         }
     }
+    
+        
 
-}
+        
+       
+    }
+
+
+
 

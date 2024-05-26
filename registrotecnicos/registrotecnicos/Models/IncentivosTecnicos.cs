@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace registrotecnicos.Models
 {
@@ -10,7 +11,7 @@ namespace registrotecnicos.Models
 
         public DateTime Fecha { get; set; }
 
-
+        [ForeignKey("TecnicoId")]
         public int TecnicoId {  get; set; }
 
         public string Descripcion { get; set; }
