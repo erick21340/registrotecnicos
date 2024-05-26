@@ -1,0 +1,82 @@
+﻿@page "/Edith/{IncentivoId:int}"
+@rendermode InteractiveServer
+@inject IncentivoService incentivoService
+@inject NavigationManager navigation
+
+<PageTitle>@(incentivo != null ? "Editar incentivo" : "Crear nuevo incentivo")</PageTitle>
+
+<EditForm Model="@incentivo" OnValidSubmit="@Guardar">
+    <DataAnnotationsValidator />
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header">
+                <h1><strong>@(incentivo != null ? "Editar incentivo" : "Crear nuevo incentivo")</strong></h1>
+            </div>
+            <div class="card-body">
+                <label class="form-label" for="id"><strong>IncentivoId</strong></label>
+                <InputNumber id="id" class="form-control" @bind-Value="incentivo.IncentivoId"></InputNumber>
+
+                <div class="form-group">
+                    <label for="fecha">Fecha:</label>
+                    <InputDate id="fecha" class="form-control" @bind-Value="incentivo.Fecha" />
+                </div>
+                <label class="form-label" for="id"><strong>Tecnico ID</strong></label>
+                <InputNumber id="id" class="form-control" @bind-Value="incentivo.TecnicoId"></InputNumber>
+                <label class="form-label" for="descripcion"><strong>Descripción</strong></label>
+                <InputText id="descripcion" class="form-control" @bind-Value="incentivo.Descripcion"></InputText>
+                <ValidationMessage For="@(()=> incentivo.Descripcion)"></ValidationMessage>
+
+
+                <label class="form-label" for="monto"><strong>Monto</strong></label>
+                <InputNumber id="monto" class="form-control" @bind-Value="incentivo.Monto" min="0"></InputNumber>
+                <ValidationMessage For="@(()=> incentivo.Monto)"></ValidationMessage>
+
+                <label class="form-label" for="id"><strong>Cantidad de servicios</strong></label>
+                <InputNumber id="id" class="form-control" @bind-Value="incentivo.CantidadServicios"></InputNumber>
+            </div>
+            <div class="card-footer">
+                <button type="button" class="btn btn-outline-secondary" @onclick="Volver">Volver</button>
+                <button type="submit" class="btn btn-outline-success bi bi-floppy"> @(incentivo != null ? "Guardar cambios" : "Crear")</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int IncentivoId { get; set; }
+
+    public Incentivos incentivo { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (IncentivoId > 0)
+        {
+            incentivo = await incentivoService.Buscar(IncentivoId);
+        }
+        else
+        {
+            incentivo = new Incentivos();
+        }
+    }
+
+    public async Task Guardar()
+    {
+        var modificado = await incentivoService.Modificar(incentivo);
+        if (modificado)
+        {
+            navigation.NavigateTo("/Incentivos");
+        }
+        else
+        {
+            Volver();
+            //Mensaje error
+        }
+    }
+
+    public void Volver()
+    {
+        navigation.NavigateTo("/Incentivos");
+    }
+}
