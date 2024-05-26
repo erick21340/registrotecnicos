@@ -9,5 +9,7 @@ namespace registrotecnicos.DAL
         :base(options) { }
 
         public DbSet<Tecnicos> Tecnicos { get; set;}
+
+        public DbSet<Incentivos> incentivosTecnicos { get; set; }
     }
 }
