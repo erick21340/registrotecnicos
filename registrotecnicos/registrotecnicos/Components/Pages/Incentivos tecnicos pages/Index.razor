@@ -1,0 +1,97 @@
+﻿@page "/Incentivos"
+@inject IncentivoService incentivoService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Lista de Incentivos</PageTitle>
+
+<div class="card">
+    <div class="card-header bg-primary text-white text-center">
+        <h3>Incentivos</h3>
+    </div>
+
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col d-flex justify-content-end align-items-end">
+                <a href="/CreateIncentivo" class="btn btn-success"><i class="fas fa-plus"></i> Crear</a>
+            </div>
+            
+        </div>
+
+        <table class="table table-bordered text-center">
+            <thead class="bg-primary text-white">
+                <tr>
+                    <th>IncentivoId</th>
+                    <th>Fecha</th>
+                    <th>Técnico ID</th>
+                    <th>Descripción</th>
+                    <th>Cantidad de Servicios</th>
+                    <th>Monto</th>
+                    <th>Detalle</th>
+                    <th>Editar</th>
+                   <th>Eliminar</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                @if (incentivosList != null && incentivosList.Any())
+                {
+                    @foreach (var incentivo in incentivosList)
+                    {
+                        <tr>
+                            <td>@incentivo.IncentivoId</td>
+                            <td>@incentivo.Fecha.ToShortDateString()</td>
+                            <td>@incentivo.TecnicoId</td>
+                            <td>@incentivo.Descripcion</td>
+                            <td>@incentivo.CantidadServicios</td>
+                            <td>@incentivo.Monto</td>
+                            <td>
+                                <a href="/Detalle/@incentivo.IncentivoId" class="btn btn-sm btn-info"><i class="fas fa-info-circle"></i> Detalle</a>
+                            </td>
+                            <td>
+                                <a href="/Edith/@incentivo.IncentivoId" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i> Editar</a>
+                            </td>
+                            <td>
+
+                                <a href="/Delete/@incentivo.IncentivoId" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Eliminar</a>
+
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7">No hay incentivos registrados.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    List<Incentivos> incentivosList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        incentivosList = await incentivoService.Listar(i => true);
+    }
+
+    private async Task EliminarIncentivo(int incentivoId)
+    {
+        var confirmar = await JSRuntime.InvokeAsync<bool>("confirm", "¿Estás seguro de eliminar este incentivo?");
+        if (confirmar)
+        {
+            var eliminado = await incentivoService.Eliminar(incentivoId);
+            if (eliminado)
+            {
+                incentivosList = await incentivoService.Listar(i => true);
+            }
+            else
+            {
+                // Manejar error
+            }
+        }
+    }
+}
