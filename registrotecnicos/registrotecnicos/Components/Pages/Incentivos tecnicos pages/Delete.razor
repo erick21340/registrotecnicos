@@ -1,0 +1,64 @@
+﻿@page "/Delete/{IncentivoId:int}"
+@rendermode InteractiveServer
+@inject IncentivoService incentivoService
+@inject NavigationManager navigation
+
+<PageTitle>Eliminar Incentivo</PageTitle>
+
+@if (incentivo != null)
+{
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header">
+                <h1><strong>Eliminar incentivo</strong></h1>
+            </div>
+            <div class="card-body">
+                <p>¿Estás seguro de que deseas eliminar este incentivo?</p>
+                <p><strong>IncentivoId:</strong> @incentivo.IncentivoId</p>
+                <p><strong>tecnico Id:</strong> @incentivo.TecnicoId</p>
+
+                <p><strong>Descripción:</strong> @incentivo.Descripcion</p>
+                <p><strong>Monto:</strong> @incentivo.Monto</p>
+                <p><strong>Cantidad de servicios:</strong> @incentivo.CantidadServicios</p>
+            </div>
+            <div class="card-footer">
+                <button type="button" class="btn btn-outline-secondary" @onclick="Volver">Cancelar</button>
+                <button type="button" class="btn btn-outline-danger bi bi-trash" @onclick="EliminarIncentivo">Eliminar</button>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <p>Cargando...</p>
+}
+
+@code {
+    [Parameter]
+    public int IncentivoId { get; set; }
+
+    public Incentivos incentivo { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        incentivo = await incentivoService.Buscar(IncentivoId);
+    }
+
+    public async Task EliminarIncentivo()
+    {
+        var eliminado = await incentivoService.Eliminar(IncentivoId);
+        if (eliminado)
+        {
+            navigation.NavigateTo("/Incentivos");
+        }
+        else
+        {
+            // Manejar error de eliminación
+        }
+    }
+
+    public void Volver()
+    {
+        navigation.NavigateTo("/Incentivos");
+    }
+}
