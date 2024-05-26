@@ -1,0 +1,50 @@
+﻿@page "/Detalle/{IncentivoId:int}"
+
+@inject IncentivoService incentivoService
+@inject NavigationManager navigation
+
+<PageTitle>Detalle del Incentivo</PageTitle>
+
+@if (incentivo != null)
+{
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header">
+                <h1><strong>Detalle del incentivo</strong></h1>
+            </div>
+            <div class="card-body">
+                <p><strong>IncentivoId:</strong> @incentivo.IncentivoId</p>
+                <p><strong>Fecha:</strong> @incentivo.Fecha</p>
+                <p><strong>Tecnico ID:</strong> @incentivo.TecnicoId</p>
+                <p><strong>Descripción:</strong> @incentivo.Descripcion</p>
+                <p><strong>Cantidad de servicio:</strong> @incentivo.CantidadServicios</p>
+                <p><strong>Monto:</strong> @incentivo.Monto</p>
+                <!-- Puedes agregar más detalles aquí si es necesario -->
+            </div>
+            <div class="card-footer">
+                <a href="/Incentivos" class="btn btn-success"><i class="fas fa-plus"></i> volver</a>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <p>Cargando...</p>
+}
+
+@code {
+    [Parameter]
+    public int IncentivoId { get; set; }
+
+    public Incentivos incentivo { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        incentivo = await incentivoService.Buscar(IncentivoId);
+    }
+
+    public void Volver()
+    {
+        navigation.NavigateTo("/Incentivos");
+    }
+}
