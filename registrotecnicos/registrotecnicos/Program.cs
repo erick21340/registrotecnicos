@@ -11,6 +11,7 @@ builder.Services.AddRazorComponents()
 var ConStr = builder.Configuration.GetConnectionString("ConStr");
 builder.Services.AddDbContext<contexto>(c => c.UseSqlite(ConStr));
 builder.Services.AddScoped<TecnicoServices>();
+builder.Services.AddScoped<IncentivoService>();
 
 var app = builder.Build();
 

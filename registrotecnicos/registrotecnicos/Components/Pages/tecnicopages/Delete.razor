@@ -5,8 +5,8 @@
 @inject NavigationManager navigation
 
 <PageTitle>Eliminar técnico</PageTitle>
-<EditForm Model="tecnicoId" OnValidSubmit="EliminarTecnico">
-    <DataAnnotationsValidator />
+<EditForm Model="tecnicoId" OnValidSubmit="Eliminar">
+   
     <div class="container">
         <div class="card shadow-lg">
 
@@ -28,7 +28,7 @@
 
             <div class="card-footer">
                 <button type="button" class="btn btn-outline-dark" @onclick="Volver">Volver</button>
-                <button type="button" class="btn btn-outline-danger" @onclick="EliminarTecnico">Eliminar</button>
+                <button type="button" class="btn btn-outline-danger" @onclick="Eliminar">Eliminar</button>
             </div>
         </div>
     </div>
@@ -46,7 +46,7 @@
             tecnicoId = (await tecnicosServices.Buscar(tecnicosId))!;
     }
 
-    public async Task EliminarTecnico()
+    public async Task Eliminar()
     {
         var eliminar = await tecnicosServices.Eliminar(tecnicosId);
         if (eliminar)

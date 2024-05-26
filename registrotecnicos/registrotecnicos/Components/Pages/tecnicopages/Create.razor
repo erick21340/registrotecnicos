@@ -1,4 +1,4 @@
-﻿@page "/create"
+﻿@page "/CreateTecnicos"
 @inject TecnicoServices tecnicosServices
 @inject NavigationManager navigation
 @rendermode InteractiveServer
@@ -13,12 +13,12 @@
                 <h1><strong>Crear nuevo técnico</strong></h1>
             </div>
             <div class="card-body">
-                <label class="form-label" for="tipoid"><strong>TipoId</strong></label>
-                <InputNumber id="tipoid" class="form-control" @bind-Value="tecnico.tipoid"></InputNumber>
+                <label class="form-label" for="TipoId"><strong>TipoId</strong></label>
+                <InputNumber id="TipoId" class="form-control" @bind-Value="tecnico.tipoid"></InputNumber>
                 <ValidationMessage For="@(() => tecnico.tipoid)" />
 
-                <label class="form-label" for="TecnicosTipos"><strong>Tipo</strong></label>
-                <InputText id="TecnicosTipos" class="form-control" @bind-Value="tecnico.TecnicosTipos"></InputText>
+                <label class="form-label" for="TecnicoTipos"><strong>tipos Tecnico</strong></label>
+                <InputText id="TecnicoTipos" class="form-control" @bind-Value="tecnico.TecnicosTipos"></InputText>
                 <ValidationMessage For="@(() => tecnico.TecnicosTipos)" />
             </div>
             <div class="card-footer">
@@ -44,4 +44,3 @@
         navigation.NavigateTo("/Tecnico");
     }
 }
-
